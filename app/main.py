@@ -1,13 +1,16 @@
 from fastapi import FastAPI
-from app.api import transcript, chunk, ingestion, embedding
+from dotenv import load_dotenv
+from app.api import transcript, chunk, ingestion, embedding, query
+
+load_dotenv()
 
 app = FastAPI(title="Ask My Youtuber Backend")
-
 
 app.include_router(transcript.router, prefix="/api", tags=["Transcript"])
 app.include_router(chunk.router, prefix="/api", tags=["Chunk"])
 app.include_router(embedding.router, prefix="/api", tags=["Embedding"])
 app.include_router(ingestion.router, prefix="/api", tags=["Ingestion"])
+app.include_router(query.router, prefix="/api", tags=["query"])
 
 @app.get("/")
 def root():

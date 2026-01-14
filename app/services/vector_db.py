@@ -3,6 +3,9 @@ from typing import List, Dict, Any, Union
 from pinecone import Pinecone 
 from itertools import islice
 from fastapi import HTTPException
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- Configuration ---
 PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
@@ -71,18 +74,25 @@ class VectorDBService:
             "total_count": total_count
         }
 
-    def query_documents(self, query_vector: List[float], top_k: int = 5) -> List[Dict[str, Any]]:
+    def query_documents(self, query_vector: List[float], top_k: int = 5, video_id: str = None) -> List[Dict[str, Any]]:
         """
         Performs a similarity search using the query vector to retrieve relevant chunks (Retrieval step).
         """
         try:
+
+            search_filter = {}
+            if video_id:
+                search_filter = {"video_id": {"$eq": video_id}}
+
             results = self.index.query(
                 vector=query_vector,
                 top_k=top_k,
+                filter = search_filter,
                 include_values=False,
                 include_metadata=True,
                 namespace=self.namespace
             )
+            
         except Exception as e:
             print(f"Pinecone Query Error: {e}")
             raise HTTPException(status_code=500, detail=f"Pinecone query failed: {str(e)}")
