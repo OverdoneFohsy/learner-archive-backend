@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.services.ingestion_service import IngestionService, get_ingestion_service
+
 router = APIRouter(prefix="/ingestion", tags=["Ingestion"])
 
 @router.get("/")
