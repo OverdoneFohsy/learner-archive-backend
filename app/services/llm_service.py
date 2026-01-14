@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 from google import genai
 
+_llm_service_instance = None
+
 class LLMService:
     def __init__(self):
         self.client = genai.Client()
@@ -32,4 +34,8 @@ class LLMService:
             return None
     
 def get_llm_service():
-    return LLMService()
+    global _llm_service_instance
+    if not _llm_service_instance:
+        _llm_service_instance = LLMService()
+
+    return _llm_service_instance

@@ -1,6 +1,7 @@
 from fastapi import Depends
-from app.services import transcript_service, chunk, vector_db, embedding_service, llm_service
+from app.services import vector_db, embedding_service, llm_service
 
+_query_service_instance = None
 class QueryService:
     def __init__(self, embedding_service: embedding_service.EmbeddingService, vector_db_service: vector_db.VectorDBService, llm_service:llm_service.LLMService):
         self.embedding_service = embedding_service
@@ -51,6 +52,10 @@ def get_query_service(embedding_service: embedding_service.EmbeddingService = De
                           vector_db_service: vector_db.VectorDBService = Depends(vector_db.get_vector_db_service),
                           llm_service: llm_service.LLMService = Depends(llm_service.get_llm_service)
                           ):
-        return QueryService(embedding_service=embedding_service, vector_db_service=vector_db_service, llm_service=llm_service)
+        global _query_service_instance
+        if not _query_service_instance:
+            _query_service_instance = QueryService(embedding_service=embedding_service, vector_db_service=vector_db_service, llm_service=llm_service)
+
+        return _query_service_instance
 
         
